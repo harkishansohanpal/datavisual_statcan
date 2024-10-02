@@ -3,23 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Visualization - Stats Canada</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Chart.js with StatsCan JSON API</title>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center">Statistics Canada Data Visualization</h1>
 
-        <div class="row">
-            <div class="col-12">
-                <canvas id="dataChart"></canvas>
-            </div>
-        </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-    <script src="app.js"></script>
+<canvas id="dataChart"></canvas>
+
+<script>
+    const API_URL = 'https://www150.statcan.gc.ca/t1/wds/rest/getDataFromCubePidMember/18100205/1';
+
+    async function fetchJSONData() {
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error('Failed to fetch data from StatsCan API');
+            
+            const jsonData = await response.json();  // Parse JSON response
+            console.log(jsonData);  // Inspect the JSON structure
+            
+            const chartData = processData(jsonData);
+            renderChart(chartData);
+        } catch (error) {
+            console.error('Error fetching or processing data:', error);
+        }
+    }
+
+    // Function to process the JSON data into a format usable by Chart.js
+    function processData(data) {
+        const labels = data.object[0].vectorDataPoint.map(item => item.refPer);  // Assuming 'refPer' is the year/period
+        const values = data.object[0].vectorDataPoint.map(item => parseFloat(item.value));  // Assuming 'value' holds the data points
+        
+        return { labels, values };
+    }
+
+    // Function to render chart using Chart.js
+    function renderChart(chartData) {
+        const ctx = document.getElementById('dataChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'Labour Force Survey Data',
+                    data: chartData.values,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Period'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Call the function to fetch and display chart
+    fetchJSONData();
+</script>
+
 </body>
 </html>
