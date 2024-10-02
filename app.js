@@ -1,5 +1,5 @@
 // URL to fetch data from Stats Canada (replace with actual data source)
-const API_URL = 'https://www150.statcan.gc.ca/t1/wds/rest/getDataFromCubePidMember/18100205/1';
+const API_URL = 'https://cors-anywhere.herokuapp.com/https://www150.statcan.gc.ca/t1/wds/rest/getDataFromCubePidMember/18100205/1';
 
 async function fetchData() {
     try {
