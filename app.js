@@ -1,33 +1,15 @@
-// URL to fetch data from Stats Canada (replace with actual data source)
-const API_URL = 'https://www150.statcan.gc.ca/t1/wds/rest/getFullTableDownloadCSV/17100005/en';
+// Mock data to test the chart rendering
+const mockData = {
+    labels: ['2020', '2021', '2022', '2023'],
+    values: [100, 150, 200, 250]
+};
 
-async function fetchData() {
-    try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-
-        const chartData = processData(data);
-        renderChart(chartData);
-
-    } catch (error) {
-        console.error("Error fetching data: ", error);
-    }
+function fetchData() {
+    // Simulate successful data fetch using mock data
+    const chartData = mockData;  // Use mock data instead of fetching from API
+    renderChart(chartData);
 }
 
-// Function to process raw data into a format usable by the chart
-function processData(data) {
-    const labels = [];
-    const values = [];
-
-    data.forEach(item => {
-        labels.push(item.date);  // Customize this based on the dataset structure
-        values.push(item.value); // Customize this based on the dataset structure
-    });
-
-    return { labels, values };
-}
-
-// Function to render the chart
 function renderChart(chartData) {
     const ctx = document.getElementById('dataChart').getContext('2d');
     new Chart(ctx, {
@@ -35,7 +17,7 @@ function renderChart(chartData) {
         data: {
             labels: chartData.labels,
             datasets: [{
-                label: 'Data from Stats Canada',
+                label: 'Mock Data',
                 data: chartData.values,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 2,
@@ -63,5 +45,4 @@ function renderChart(chartData) {
     });
 }
 
-// Fetch and render the data
 fetchData();
